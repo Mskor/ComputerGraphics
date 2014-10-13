@@ -1,5 +1,8 @@
 package oyakov.graph.base;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -20,6 +23,10 @@ public class Poly {
 	private double speed;
 	private Path p;
 
+	public enum GenerationLayout {
+		REGULAR, STAR, ABSOLUTE_RANDOM
+	}
+
 	public Poly(Polygon poly, Path path) {
 		base = new Point();
 		base._y = 0.0;
@@ -38,7 +45,25 @@ public class Poly {
 		p = path;
 	}
 
-	public void reassembleAsRegular(int n) {
+	public void reassemblePolygon(GenerationLayout layout, int n) {
+		if (n < 3)
+			return;
+		switch (layout) {
+		case REGULAR:
+			reassembleAsRegular(n);
+			break;
+		case STAR:
+			reassembleAsStar(n);
+			break;
+		case ABSOLUTE_RANDOM:
+			reassembleAsArpoly(n);
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void reassembleAsRegular(int n) {
 		if (n < 3)
 			return;
 		Point start = new Point();
@@ -56,9 +81,69 @@ public class Poly {
 		}
 		points = new Matrix(xp, yp);
 	}
-	
-	public void reassembleAsStar(int n){
-		
+
+	private void reassembleAsArpoly(int n) {
+		List<Point> edges = new ArrayList<Point>();
+		boolean self_intersected = false;
+		edges.add(Point.getRandom(10));
+		edges.add(Point.getRandom(10));
+		edges.add(Point.getRandom(10));
+		for (int i = 3; i < n - 1; i++) {
+			Point candidate = Point.getRandom(10);
+			self_intersected = false;
+			for (int j = 1; j < i - 1; j++) {
+				if (!Point.intersection(edges.get(j), edges.get(j - 1), candidate, edges.get(edges.size() - 1))) {
+					edges.add(candidate);
+				} else {
+					self_intersected = true;
+				}
+				if(self_intersected){
+					i--;
+					break;					
+				}					
+			}
+		}		
+		for (int j = 2; j < edges.size() - 1; j++) {
+			if (!Point.intersection(edges.get(j), edges.get(j - 1), edges.get(edges.size() - 1), edges.get(0))) {
+				continue;
+			} else {
+				self_intersected = true;
+			}
+		}
+		if (self_intersected) {
+			this.reassembleAsArpoly(n);
+			return;
+		} else {
+			double[] xpoint = new double[edges.size()], ypoint = new double[edges.size()];
+			for (int i = 0; i < edges.size(); i++) {
+				xpoint[i] = edges.get(i)._x;
+				ypoint[i] = edges.get(i)._y;
+			}
+			Matrix new_points = new Matrix(xpoint, ypoint);
+			points = new_points;
+			raisePointsChanged();
+		}
+	}
+
+	private void reassembleAsStar(int n) {
+		if (n < 3)
+			return;
+		Point start = new Point();
+		Random random = new Random(System.currentTimeMillis());
+		start._x = 0.0;
+		start._y = 100.0 * random.nextDouble();
+		ObservableList<Double> pts = polygon.getPoints();
+		Double xp[] = new Double[n];
+		Double yp[] = new Double[n];
+		pts.clear();
+		for (int i = 0; i < n; i++) {
+			xp[i] = start.rotated((2 * Math.PI / n) * i)._x;
+			pts.add(xp[i] + base._x);
+			yp[i] = start.rotated((2 * Math.PI / n) * i)._y;
+			pts.add(yp[i] + base._y);
+			start._y = 100.0 * random.nextDouble();
+		}
+		points = new Matrix(xp, yp);
 	}
 
 	public void move(double x, double y) {
@@ -80,14 +165,14 @@ public class Poly {
 	public void startFollowingTrajectory(Trajectory t) {
 		timer = new Timer(true);
 		p.getElements().clear();
-		
+
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				Platform.runLater(() -> {
 					double newX = t.getX(System.currentTimeMillis() * speed), newY = t.getY(System.currentTimeMillis() * speed);
 					move(newX, newY);
-					if(p.getElements().isEmpty())
+					if (p.getElements().isEmpty())
 						p.getElements().add(new MoveTo(newX, newY));
 					else
 						p.getElements().add(new LineTo(newX, newY));
@@ -97,7 +182,7 @@ public class Poly {
 	}
 
 	public void stopFollowingTrajectory() {
-		if(timer == null)
+		if (timer == null)
 			return;
 		p.getElements().clear();
 		timer.cancel();

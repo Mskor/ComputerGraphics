@@ -25,6 +25,18 @@ import javafx.scene.shape.Polygon;
 public class MainViewController {
 
 	@FXML
+	private RadioButton star_method;
+	
+	@FXML
+    private RadioButton ar_method;
+	
+    @FXML
+    private RadioButton regular_method;
+
+    @FXML
+    private ToggleGroup reass_group;
+
+	@FXML
 	private Polygon subjectPoly;
 
 	@FXML
@@ -47,27 +59,27 @@ public class MainViewController {
 
 	@FXML
 	private TextField cir_radius_2;
-	
+
 	@FXML
-    private TextField astr_center_y;
-	
+	private TextField astr_center_y;
+
 	@FXML
-    private TextField astr_center_x;
-	
+	private TextField astr_center_x;
+
 	@FXML
-    private TextField astr_radius;
-	
+	private TextField astr_radius;
+
 	@FXML
-    private RadioButton astroid_tr_rbutton;
+	private RadioButton astroid_tr_rbutton;
 
 	@FXML
 	private TextField cir_center_x;
-	
+
 	@FXML
-    private Label currentX;
-	
+	private Label currentX;
+
 	@FXML
-    private Label currentY;
+	private Label currentY;
 
 	@FXML
 	private Slider polygonSize;
@@ -80,7 +92,7 @@ public class MainViewController {
 
 	@FXML
 	private TextField poly_pt_number;
-	
+
 	@FXML
 	private CheckBox isPathTracked;
 
@@ -96,25 +108,27 @@ public class MainViewController {
 	}
 
 	TrajectoryMode mode = TrajectoryMode.MANUAL_MODE;
-	
+
 	@FXML
-    void raisePathTracker(ActionEvent event) {
-		if(isPathTracked.isSelected()){
-			path.setStrokeWidth(2.0);			
+	void raisePathTracker(ActionEvent event) {
+		if (isPathTracked.isSelected()) {
+			path.setStrokeWidth(2.0);
 		} else {
 			path.setStrokeWidth(0.0);
 		}
-    }
+	}
 
+	@FXML
 	EventHandler<MouseEvent> handleMouseManual = e -> {
 		internalPolygon.move(e.getX(), e.getY());
-		currentX.setText(((Double)e.getX()).toString());
-		currentY.setText(((Double)e.getY()).toString());
+		currentX.setText(((Double) e.getX()).toString());
+		currentY.setText(((Double) e.getY()).toString());
 	};
 
-	EventHandler<ActionEvent> raisePathChanged = e -> {
+	@FXML
+	void raisePathChanged(ActionEvent e) {
 		path.getElements().clear();
-		if (mode == TrajectoryMode.ELLIPSE_MODE){
+		if (mode == TrajectoryMode.ELLIPSE_MODE) {
 			EllipseTrajectory et = (EllipseTrajectory) currentTrajectory;
 			// Validate
 			if ("".equals(cir_radius.getText()))
@@ -133,7 +147,7 @@ public class MainViewController {
 				et.setxBase(400.0);
 			else
 				et.setxBase(Double.parseDouble(cir_center_x.getText()));
-		} else if(mode == TrajectoryMode.ASTROID_MODE){
+		} else if (mode == TrajectoryMode.ASTROID_MODE) {
 			AstroidTrajectory at = (AstroidTrajectory) currentTrajectory;
 			if ("".equals(astr_radius.getText()))
 				at.setR(100.0);
@@ -146,22 +160,10 @@ public class MainViewController {
 			if ("".equals(astr_center_x.getText()))
 				at.setXBase(400.0);
 			else
-				at.setXBase(Double.parseDouble(astr_center_x.getText()));		
+				at.setXBase(Double.parseDouble(astr_center_x.getText()));
 		}
 	};
-
-	EventHandler<ActionEvent> onNumberChanged = e -> {
-		int n;
-		if ("".equals(poly_pt_number.getText()))
-			n = 4;
-		else
-			n = Integer.parseInt(poly_pt_number.getText());
-		polygonSize.setValue(1.0);
-		polygonAngle.setValue(0.0);
-		polygonSpeed.setValue(1.0);
-		internalPolygon.reassembleAsRegular(n);
-	};
-
+	
 	@FXML
 	void initialize() {
 		// If any of injected properties is null -> something is wrong
@@ -181,20 +183,9 @@ public class MainViewController {
 		path.setStroke(Color.MAGENTA);
 		viewPane.getChildren().add(path);
 		internalPolygon = new Poly(subjectPoly, path);
-		
+
 		viewPane.setOnMouseMoved(handleMouseManual);
-
-		poly_pt_number.setOnAction(onNumberChanged);
 		
-		// Trajectory shape has changed EH
-		cir_radius.setOnAction(raisePathChanged);
-		cir_radius_2.setOnAction(raisePathChanged);
-		cir_center_x.setOnAction(raisePathChanged);
-		cir_center_y.setOnAction(raisePathChanged);
-		astr_center_x.setOnAction(raisePathChanged);
-		astr_center_y.setOnAction(raisePathChanged);
-		astr_radius.setOnAction(raisePathChanged);
-
 		// Scaling slider configuration
 		polygonSize.showTickMarksProperty().setValue(true);
 		polygonSize.showTickLabelsProperty().setValue(true);
@@ -221,20 +212,36 @@ public class MainViewController {
 		polygonSpeed.valueProperty().addListener((obs_val, old_val, new_val) -> {
 			internalPolygon.setSpeed((Double) new_val / 1000.0);
 		});
+		
+		star_method.setUserData(Poly.GenerationLayout.STAR);
+		ar_method.setUserData(Poly.GenerationLayout.ABSOLUTE_RANDOM);
+		regular_method.setUserData(Poly.GenerationLayout.REGULAR);
+		reass_group.selectedToggleProperty().addListener((obs_val, old_val, new_val) -> {
+			int n;
+			if("".equals(poly_pt_number.getText()))
+				n = 10;
+			else
+				n = Integer.parseInt(poly_pt_number.getText());
+			polygonSize.setValue(1.0);
+			polygonAngle.setValue(0.0);
+			polygonSpeed.setValue(1.0);
+			internalPolygon.reassemblePolygon((Poly.GenerationLayout)new_val.getUserData(), n);
+		});
 
 		// Trajectory switch configuration
 		man_tr_rbutton.setUserData(TrajectoryMode.MANUAL_MODE);
 		cir_tr_rbutton.setUserData(TrajectoryMode.ELLIPSE_MODE);
 		astroid_tr_rbutton.setUserData(TrajectoryMode.ASTROID_MODE);
-		trGroup.selectedToggleProperty().addListener((observableVal, old_val, new_val) -> {
+		trGroup.selectedToggleProperty().addListener((obs_val, old_val, new_val) -> {
 			mode = (TrajectoryMode) new_val.getUserData();
 			double x, y;
 			switch (mode) {
 			case ELLIPSE_MODE:
 				internalPolygon.stopFollowingTrajectory();
 				// Parametric circle trajectory
-				// Validate 
-				double Rx, Ry;
+				// Validate
+				double Rx,
+				Ry;
 				if ("".equals(cir_radius.getText()))
 					Ry = 100.0;
 				else
@@ -251,7 +258,7 @@ public class MainViewController {
 					x = 400.0;
 				else
 					x = Double.parseDouble(cir_center_x.getText());
-				
+
 				currentTrajectory = new EllipseTrajectory(Rx, Ry, x, y);
 				internalPolygon.startFollowingTrajectory(currentTrajectory);
 				// Unwire mouse motion handler
@@ -261,7 +268,7 @@ public class MainViewController {
 			case ASTROID_MODE:
 				internalPolygon.stopFollowingTrajectory();
 				// Parametric circle trajectory
-				// Validate 
+				// Validate
 				double R;
 				if ("".equals(astr_radius.getText()))
 					R = 100.0;
@@ -274,7 +281,7 @@ public class MainViewController {
 				if ("".equals(astr_center_x.getText()))
 					x = 400.0;
 				else
-					x = Double.parseDouble(astr_center_x.getText());				
+					x = Double.parseDouble(astr_center_x.getText());
 				currentTrajectory = new AstroidTrajectory(R, x, y);
 				internalPolygon.startFollowingTrajectory(currentTrajectory);
 				// Unwire mouse motion handler
@@ -287,7 +294,7 @@ public class MainViewController {
 				break;
 			default:
 				break;
-			}		
+			}
 		});
 	}
 }
