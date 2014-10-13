@@ -56,6 +56,10 @@ public class Poly {
 		}
 		points = new Matrix(xp, yp);
 	}
+	
+	public void reassembleAsStar(int n){
+		
+	}
 
 	public void move(double x, double y) {
 		base._x = x;
