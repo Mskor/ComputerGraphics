@@ -153,11 +153,6 @@
                                                       <Font name="Meslo LG L Regular" size="12.0" />
                                                    </font>
                                                 </RadioButton>
-                                                <RadioButton fx:id="ar_method" mnemonicParsing="false" text="Random" toggleGroup="$reass_group">
-                                                   <font>
-                                                      <Font name="Meslo LG L Regular" size="12.0" />
-                                                   </font>
-                                                </RadioButton>
                                              </children>
                                              <padding>
                                                 <Insets left="15.0" right="15.0" />
@@ -235,6 +230,42 @@
                                                             <Font name="Meslo LG L Regular" size="12.0" />
                                                          </font>
                                                       </TextField>
+                                                   </children>
+                                                </HBox>
+                                                <RadioButton fx:id="cyc_tr_button" mnemonicParsing="false" text="Epitroheoid" toggleGroup="$trGroup">
+                                                   <font>
+                                                      <Font name="Meslo LG L Regular" size="12.0" />
+                                                   </font>
+                                                </RadioButton>
+                                                <HBox spacing="10.0">
+                                                   <children>
+                                                      <TextField fx:id="cyc_radius" onAction="#raisePathChanged" prefHeight="25.0" prefWidth="80.0" promptText="R:">
+                                                         <font>
+                                                            <Font name="Meslo LG L Regular" size="12.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <TextField fx:id="cyc_x" onAction="#raisePathChanged" prefHeight="25.0" prefWidth="80.0" promptText="r:">
+                                                         <font>
+                                                            <Font name="Meslo LG L Regular" size="12.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <TextField fx:id="cyc_y" onAction="#raisePathChanged" prefHeight="25.0" prefWidth="80.0" promptText="h:">
+                                                         <font>
+                                                            <Font name="Meslo LG L Regular" size="12.0" />
+                                                         </font>
+                                                      </TextField>
+                                                   </children>
+                                                </HBox>
+                                                <RadioButton fx:id="ep_tr_button" mnemonicParsing="false" text="Cardioid" toggleGroup="$trGroup">
+                                                   <font>
+                                                      <Font name="Meslo LG L Regular" size="12.0" />
+                                                   </font>
+                                                </RadioButton>
+                                                <HBox spacing="10.0">
+                                                   <children>
+                                                      <TextField fx:id="epc_radius" onAction="#raisePathChanged" prefHeight="25.0" prefWidth="80.0" promptText="R:" />
+                                                      <TextField fx:id="epc_x" onAction="#raisePathChanged" prefHeight="25.0" prefWidth="80.0" promptText="X:" />
+                                                      <TextField fx:id="epc_y" onAction="#raisePathChanged" prefHeight="25.0" prefWidth="80.0" promptText="Y:" />
                                                    </children>
                                                 </HBox>
                                                 <RadioButton fx:id="man_tr_rbutton" mnemonicParsing="false" selected="true" text="Manual" toggleGroup="$trGroup">

@@ -50,12 +50,30 @@ public class MainViewController {
 
 	@FXML
 	private TextField cir_center_y;
+	
+	@FXML
+	private TextField epc_y;
+	
+	@FXML
+	private TextField epc_x;
+	
+	@FXML
+	private TextField cyc_y;
+	
+	@FXML
+	private TextField cyc_x;
 
 	@FXML
 	private RadioButton man_tr_rbutton;
 
 	@FXML
 	private TextField cir_radius;
+	
+	@FXML
+	private TextField cyc_radius;
+	
+	@FXML
+	private TextField epc_radius;
 
 	@FXML
 	private TextField cir_radius_2;
@@ -71,6 +89,12 @@ public class MainViewController {
 
 	@FXML
 	private RadioButton astroid_tr_rbutton;
+	
+	@FXML
+	private RadioButton cyc_tr_button;
+	
+	@FXML
+	private RadioButton ep_tr_button;
 
 	@FXML
 	private TextField cir_center_x;
@@ -104,7 +128,7 @@ public class MainViewController {
 	private Trajectory currentTrajectory;
 
 	enum TrajectoryMode {
-		ELLIPSE_MODE, ASTROID_MODE, MANUAL_MODE
+		ELLIPSE_MODE, ASTROID_MODE, CYCLOID_MODE, EPICYCLOID_MODE, MANUAL_MODE
 	}
 
 	TrajectoryMode mode = TrajectoryMode.MANUAL_MODE;
@@ -161,6 +185,34 @@ public class MainViewController {
 				at.setXBase(400.0);
 			else
 				at.setXBase(Double.parseDouble(astr_center_x.getText()));
+		} else if(mode == TrajectoryMode.CYCLOID_MODE){
+			CycloidTrajectory ct = (CycloidTrajectory) currentTrajectory;
+			if("".equals(cyc_radius)){
+				ct.setR(100);
+			} else
+				ct.setR(Double.parseDouble(cyc_radius.getText()));
+			if ("".equals(cyc_x.getText()))
+				ct.setX(0.2);
+			else
+				ct.setX(Double.parseDouble(cyc_x.getText()));
+			if ("".equals(cyc_y.getText()))
+				ct.setY(0.3);
+			else
+				ct.setY(Double.parseDouble(cyc_y.getText()));
+		} else if(mode == TrajectoryMode.EPICYCLOID_MODE){
+			EpicycloidTrajectory ect = (EpicycloidTrajectory) currentTrajectory;
+			if("".equals(epc_radius)){
+				ect.setR(100);
+			} else
+				ect.setR(Double.parseDouble(epc_radius.getText()));
+			if ("".equals(epc_x.getText()))
+				ect.setX(400.0);
+			else
+				ect.setX(Double.parseDouble(epc_x.getText()));
+			if ("".equals(epc_y.getText()))
+				ect.setY(400.0);
+			else
+				ect.setY(Double.parseDouble(epc_y.getText()));
 		}
 	};
 	
@@ -214,7 +266,6 @@ public class MainViewController {
 		});
 		
 		star_method.setUserData(Poly.GenerationLayout.STAR);
-		ar_method.setUserData(Poly.GenerationLayout.ABSOLUTE_RANDOM);
 		regular_method.setUserData(Poly.GenerationLayout.REGULAR);
 		reass_group.selectedToggleProperty().addListener((obs_val, old_val, new_val) -> {
 			int n;
@@ -232,6 +283,9 @@ public class MainViewController {
 		man_tr_rbutton.setUserData(TrajectoryMode.MANUAL_MODE);
 		cir_tr_rbutton.setUserData(TrajectoryMode.ELLIPSE_MODE);
 		astroid_tr_rbutton.setUserData(TrajectoryMode.ASTROID_MODE);
+		ep_tr_button.setUserData(TrajectoryMode.EPICYCLOID_MODE);
+		cyc_tr_button.setUserData(TrajectoryMode.CYCLOID_MODE);
+		
 		trGroup.selectedToggleProperty().addListener((obs_val, old_val, new_val) -> {
 			mode = (TrajectoryMode) new_val.getUserData();
 			double x, y;
@@ -283,6 +337,46 @@ public class MainViewController {
 				else
 					x = Double.parseDouble(astr_center_x.getText());
 				currentTrajectory = new AstroidTrajectory(R, x, y);
+				internalPolygon.startFollowingTrajectory(currentTrajectory);
+				// Unwire mouse motion handler
+				viewPane.setOnMouseMoved(null);
+				break;
+			case CYCLOID_MODE:
+				internalPolygon.stopFollowingTrajectory();
+				double Rc, xc, yc;
+				if ("".equals(cyc_radius.getText()))
+					Rc = 100.0;
+				else
+					Rc = Double.parseDouble(cyc_radius.getText());
+				if ("".equals(cyc_x.getText()))
+					xc = 0.2;
+				else
+					xc = Double.parseDouble(cyc_x.getText());
+				if ("".equals(cyc_y.getText()))
+					yc = 0.3;
+				else
+					yc = Double.parseDouble(cyc_y.getText());
+				currentTrajectory = new CycloidTrajectory(Rc, xc, yc);
+				internalPolygon.startFollowingTrajectory(currentTrajectory);
+				// Unwire mouse motion handler
+				viewPane.setOnMouseMoved(null);
+				break;
+			case EPICYCLOID_MODE:
+				internalPolygon.stopFollowingTrajectory();
+				double Re, xe, ye;
+				if ("".equals(epc_radius.getText()))
+					Re = 100.0;
+				else
+					Re = Double.parseDouble(epc_radius.getText());
+				if ("".equals(epc_x.getText()))
+					xe = 400.0;
+				else
+					xe = Double.parseDouble(epc_x.getText());
+				if ("".equals(astr_center_x.getText()))
+					ye = 400.0;
+				else
+					ye = Double.parseDouble(epc_y.getText());
+				currentTrajectory = new EpicycloidTrajectory(Re, xe, ye);
 				internalPolygon.startFollowingTrajectory(currentTrajectory);
 				// Unwire mouse motion handler
 				viewPane.setOnMouseMoved(null);
