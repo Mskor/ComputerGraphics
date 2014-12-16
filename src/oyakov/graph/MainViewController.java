@@ -267,6 +267,7 @@ public class MainViewController {
 		
 		star_method.setUserData(Poly.GenerationLayout.STAR);
 		regular_method.setUserData(Poly.GenerationLayout.REGULAR);
+		ar_method.setUserData(Poly.GenerationLayout.ABSOLUTE_RANDOM);
 		reass_group.selectedToggleProperty().addListener((obs_val, old_val, new_val) -> {
 			int n;
 			if("".equals(poly_pt_number.getText()))

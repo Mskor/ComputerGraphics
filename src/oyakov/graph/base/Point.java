@@ -12,7 +12,7 @@ public class Point {
 		_y = y;
 	}
 	public static Point getRandom(double factor){
-		Random random = new Random(System.currentTimeMillis());
+		Random random = new Random(System.nanoTime());
 		return new Point(factor * random.nextDouble(), factor * random.nextDouble());
 	}
 	
@@ -51,9 +51,11 @@ public class Point {
 		double implicit1 = implicit(a, b, c),
 				implicit2 = implicit(a, b, d);
 		if(implicit1 * implicit2 == 0 || implicit1 * implicit2 > 0){
-			return true;
-		} else {
+			// not intersected
 			return false;
+		} else {
+			// intersected
+			return true;
 		}
 	}
 }

@@ -83,46 +83,45 @@ public class Poly {
 	}
 
 	private void reassembleAsArpoly(int n) {
-		List<Point> edges = new ArrayList<Point>();
-		boolean self_intersected = false;
+		List<Point> edges = new ArrayList<>();
+		edges.add(Point.getRandom(100));
+		edges.add(Point.getRandom(100));
 		edges.add(Point.getRandom(10));
-		edges.add(Point.getRandom(10));
-		edges.add(Point.getRandom(10));
+		boolean si;
 		for (int i = 3; i < n - 1; i++) {
-			Point candidate = Point.getRandom(10);
-			self_intersected = false;
+			si = false;
+			Point candidate = Point.getRandom(100);
 			for (int j = 1; j < i - 1; j++) {
-				if (!Point.intersection(edges.get(j), edges.get(j - 1), candidate, edges.get(edges.size() - 1))) {
-					edges.add(candidate);
-				} else {
-					self_intersected = true;
-				}
-				if(self_intersected){
+				if (Point.intersection(edges.get(j), edges.get(j - 1), candidate, edges.get(edges.size() - 1))) {
 					i--;
-					break;					
-				}					
+					si = true;
+					break;
+				}
 			}
+			if(!si)
+				edges.add(candidate);
 		}		
 		for (int j = 2; j < edges.size() - 1; j++) {
-			if (!Point.intersection(edges.get(j), edges.get(j - 1), edges.get(edges.size() - 1), edges.get(0))) {
-				continue;
-			} else {
-				self_intersected = true;
+			if (Point.intersection(edges.get(j), edges.get(j - 1), edges.get(edges.size() - 1), edges.get(0))) {
+				this.reassembleAsArpoly(n);
+				return;
 			}
 		}
-		if (self_intersected) {
-			this.reassembleAsArpoly(n);
-			return;
-		} else {
-			double[] xpoint = new double[edges.size()], ypoint = new double[edges.size()];
-			for (int i = 0; i < edges.size(); i++) {
-				xpoint[i] = edges.get(i)._x;
-				ypoint[i] = edges.get(i)._y;
-			}
-			Matrix new_points = new Matrix(xpoint, ypoint);
-			points = new_points;
-			raisePointsChanged();
+
+		ObservableList<Double> pts = polygon.getPoints();
+		Double xp[] = new Double[n];
+		Double yp[] = new Double[n];
+		pts.clear();
+
+		double[] xpoint = new double[edges.size()], ypoint = new double[edges.size()];
+		for (int i = 0; i < edges.size(); i++) {
+			xpoint[i] = edges.get(i)._x;
+			pts.add(xpoint[i] + base._x);
+			ypoint[i] = edges.get(i)._y;
+			pts.add(ypoint[i] + base._y);
 		}
+		points = new Matrix(xpoint, ypoint);
+		raisePointsChanged();
 	}
 
 	private void reassembleAsStar(int n) {

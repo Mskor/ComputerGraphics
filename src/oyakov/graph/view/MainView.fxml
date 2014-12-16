@@ -153,6 +153,11 @@
                                                       <Font name="Meslo LG L Regular" size="12.0" />
                                                    </font>
                                                 </RadioButton>
+                                                <RadioButton fx:id="ar_method" mnemonicParsing="false" text="Absolute random" toggleGroup="$reass_group">
+                                                   <font>
+                                                      <Font name="Meslo LG L Regular" size="12.0" />
+                                                   </font>
+                                                </RadioButton>
                                              </children>
                                              <padding>
                                                 <Insets left="15.0" right="15.0" />
