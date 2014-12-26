@@ -88,7 +88,7 @@ public class Poly {
 		edges.add(Point.getRandom(100));
 		edges.add(Point.getRandom(10));
 		boolean si;
-		for (int i = 3; i < n - 1; i++) {
+		for (int i = 3; i < n; i++) {			
 			si = false;
 			Point candidate = Point.getRandom(100);
 			for (int j = 1; j < i - 1; j++) {
