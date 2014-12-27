@@ -5,15 +5,16 @@ import oyakov.graph.base.util.ValidatorChain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EpicycloidTrajectory implements Trajectory {
+public class EpitrohoidTrajectory implements Trajectory {
 
-    private double R = 100.0, x = 400.0, y = 400.0;
+    private double R = 100.0, x = 20.0, y = 20.0;
 
     private final List<Double> defaultArgs = new ArrayList<Double>() {{
         add(100.0);
-        add(400.0);
-        add(400.0);
+        add(20.0);
+        add(20.0);
     }};
+
 
     public double getY() {
         return y;
@@ -39,10 +40,10 @@ public class EpicycloidTrajectory implements Trajectory {
         R = r;
     }
 
-    public EpicycloidTrajectory() {
+    public EpitrohoidTrajectory() {
     }
 
-    public EpicycloidTrajectory(double R, double x, double y) {
+    public EpitrohoidTrajectory(double R, double x, double y) {
         this.R = R;
         this.x = x;
         this.y = y;
@@ -50,12 +51,14 @@ public class EpicycloidTrajectory implements Trajectory {
 
     @Override
     public double getX(double t) {
-        return 2 * R * Math.cos(t) - R * Math.cos(2 * t) + x;
+        double m = x / R;
+        return R * (m + 1) * Math.cos(m * t) - y * Math.cos((m + 1) * t) + 400.0;
     }
 
     @Override
     public double getY(double t) {
-        return 2 * R * Math.sin(t) - R * Math.sin(2 * t) + y;
+        double m = x / R;
+        return R * (m + 1) * Math.sin(m * t) - y * Math.sin((m + 1) * t) + 400.0;
     }
 
     @Override

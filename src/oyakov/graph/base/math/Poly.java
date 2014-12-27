@@ -1,10 +1,4 @@
-package oyakov.graph.base;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+package oyakov.graph.base.math;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -12,8 +6,9 @@ import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
+import oyakov.graph.base.trajectories.Trajectory;
 
-// @author oyakov1994
+import java.util.*;
 
 public class Poly {
 	private Matrix points;

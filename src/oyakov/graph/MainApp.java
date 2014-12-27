@@ -1,12 +1,12 @@
 package oyakov.graph;
 
-import java.io.IOException;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class MainApp extends Application {
 
@@ -15,9 +15,9 @@ public class MainApp extends Application {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(MainApp.class.getResource("view/MainView.fxml"));
 		try {
-			AnchorPane rootLayout = (AnchorPane) loader.load();
+			AnchorPane rootLayout = loader.load();
 			Scene scene = new Scene(rootLayout);
-			primaryStage.setScene(scene);			
+			primaryStage.setScene(scene);
 			primaryStage.setTitle("Laba_1 v.1.0");
 			primaryStage.setResizable(false);
 			primaryStage.show();

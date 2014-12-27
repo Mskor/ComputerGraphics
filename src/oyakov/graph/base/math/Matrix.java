@@ -1,4 +1,4 @@
-package oyakov.graph.base;
+package oyakov.graph.base.math;
 
 import java.util.function.Function;
 
@@ -204,7 +204,7 @@ public class Matrix {
 
 	@Override
 	public String toString() {
-		String res = new String("");
+		String res = "";
 		for (int i = 0; i < _m; i++) {
 			for (int j = 0; j < _n; j++) {
 				res += String.format("%1$6.2f", _values[i][j]);

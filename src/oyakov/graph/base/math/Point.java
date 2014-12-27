@@ -1,4 +1,4 @@
-package oyakov.graph.base;
+package oyakov.graph.base.math;
 
 import java.util.Random;
 
@@ -41,8 +41,8 @@ public class Point {
 		res._y = this._y - another._y;
 		return res;
 	}
-	
-	public static double implicit(Point a, Point b, Point p){
+
+	private static double implicit(Point a, Point b, Point p) {
 		Point pa = p.minus(a), pb = p.minus(b);
 		return pa._x * pb._y - pa._y * pb._x;
 	}
@@ -50,12 +50,6 @@ public class Point {
 	public static boolean intersection(Point a, Point b, Point c, Point d){
 		double implicit1 = implicit(a, b, c),
 				implicit2 = implicit(a, b, d);
-		if(implicit1 * implicit2 == 0 || implicit1 * implicit2 > 0){
-			// not intersected
-			return false;
-		} else {
-			// intersected
-			return true;
-		}
+		return !(implicit1 * implicit2 == 0 || implicit1 * implicit2 > 0);
 	}
 }

@@ -1,12 +1,12 @@
-package oyakov.graph.base;
+package oyakov.graph.base.util;
 
 import java.util.LinkedList;
 
 public class ValidatorChain<T> {
-	public LinkedList<Validator<T>> validators;
+	private LinkedList<Validator<T>> validators;
 	
 	public ValidatorChain(){
-		validators = new LinkedList<Validator<T>>();
+		validators = new LinkedList<>();
 	}
 	
 	public ValidatorChain<T> add(Validator<T> tail){
@@ -19,12 +19,12 @@ public class ValidatorChain<T> {
 	}
 	
 	public boolean test(T value){
-		boolean result = true;
+		boolean result;
 		for(Validator<T> v: validators){
-			result &= v.validate(value);
+			result = v.validate(value);
 			if(!result)
-				return result;
+				return false;
 		}
-		return result;
+		return true;
 	}
 }
