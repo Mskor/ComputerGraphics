@@ -32,6 +32,11 @@ public class EllipseTrajectory implements Trajectory {
     }
 
     @Override
+    public double getScale(double t) {
+        return 2 * Math.cos(t) + 0.1;
+    }
+
+    @Override
     public double getX(double t) {
         return Rx * Math.cos(t) + xBase;
     }

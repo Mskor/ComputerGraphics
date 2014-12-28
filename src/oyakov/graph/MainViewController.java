@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
 import oyakov.graph.base.math.Poly;
@@ -116,6 +117,9 @@ public class MainViewController {
     private TextField poly_pt_number;
 
     @FXML
+    private Circle center_ptr;
+
+    @FXML
     private CheckBox isPathTracked;
 
     // Polygon model repository
@@ -141,6 +145,8 @@ public class MainViewController {
     @FXML
     private final EventHandler<MouseEvent> handleMouseManual = e -> {
         internalPolygon.move(e.getX(), e.getY());
+        center_ptr.setCenterX(e.getX());
+        center_ptr.setCenterY(e.getY());
         currentX.setText(((Double) e.getX()).toString());
         currentY.setText(((Double) e.getY()).toString());
     };
@@ -207,12 +213,14 @@ public class MainViewController {
         assert cir_center_x != null : "fx:id=\"cir_center_x\" was not injected: check your FXML file 'MainView.fxml'.";
         assert polygonSize != null : "fx:id=\"polygonSize\" was not injected: check your FXML file 'MainView.fxml'.";
 
+        center_ptr.setFill(Color.RED);
+
         // Dealing with path tracker
         path = new Path();
         path.setStrokeWidth(2.0);
-        path.setStroke(Color.MAGENTA);
+        path.setStroke(Color.RED);
         viewPane.getChildren().add(path);
-        internalPolygon = new Poly(subjectPoly, path);
+        internalPolygon = new Poly(subjectPoly, path, center_ptr);
 
         viewPane.setOnMouseMoved(handleMouseManual);
 

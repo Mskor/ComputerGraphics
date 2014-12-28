@@ -2,10 +2,7 @@ package oyakov.graph.base.math;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Polygon;
+import javafx.scene.shape.*;
 import oyakov.graph.base.trajectories.Trajectory;
 
 import java.util.*;
@@ -17,12 +14,15 @@ public class Poly {
 	private Timer timer;
 	private double speed;
 	private Path p;
+	private Circle center_elem;
+	private Matrix snapshot;
 
 	public enum GenerationLayout {
 		REGULAR, STAR, ABSOLUTE_RANDOM
 	}
 
-	public Poly(Polygon poly, Path path) {
+	public Poly(Polygon poly, Path path, Circle center_elem) {
+		this.center_elem = center_elem;
 		base = new Point();
 		base._y = 0.0;
 		base._x = 0.0;
@@ -103,9 +103,9 @@ public class Poly {
 			}
 		}
 
+		edges = calibratePoly(edges);
+
 		ObservableList<Double> pts = polygon.getPoints();
-		Double xp[] = new Double[n];
-		Double yp[] = new Double[n];
 		pts.clear();
 
 		double[] xpoint = new double[edges.size()], ypoint = new double[edges.size()];
@@ -116,7 +116,10 @@ public class Poly {
 			pts.add(ypoint[i] + base._y);
 		}
 		points = new Matrix(xpoint, ypoint);
+
 		raisePointsChanged();
+
+
 	}
 
 	private void reassembleAsStar(int n) {
@@ -140,13 +143,48 @@ public class Poly {
 		points = new Matrix(xp, yp);
 	}
 
+	private List<Point> calibratePoly(List<Point> polygon) {
+		Point center = new Point(0.0, 0.0);
+		double sigmaSum = 0.0;
+
+		for (int i = 2; i != polygon.size(); i++) {
+			Point gI = Point.center3(polygon.get(0), polygon.get(i), polygon.get(i - 1));
+			Double sigmaI = (0.5 * Point.implicit(polygon.get(0), polygon.get(i), polygon.get(i - 1)));
+			center = center.plus(gI.mulScalar(sigmaI));
+			sigmaSum += (0.5 * Point.implicit(polygon.get(0), polygon.get(i), polygon.get(i - 1)));
+		}
+
+		center._x /= sigmaSum;
+		center._y /= sigmaSum;
+
+		Point offset = center.minus(base);
+
+		for (int i = 0; i < polygon.size(); i++) {
+			polygon.get(i)._x -= center._x;
+			polygon.get(i)._y -= center._y;
+		}
+
+		base._x += center._x;
+		base._y += center._y;
+
+		return polygon;
+	}
+
 	public void move(double x, double y) {
 		base._x = x;
 		base._y = y;
+		center_elem.setCenterX(x);
+		center_elem.setCenterY(y);
 		raisePointsChanged();
 	}
 
 	public void scale(double ratio) {
+		points = points.each(e -> e * ratio);
+		raisePointsChanged();
+	}
+
+	public void scale(double ratio, Matrix snapshot) {
+		points = new Matrix(snapshot);
 		points = points.each(e -> e * ratio);
 		raisePointsChanged();
 	}
@@ -160,11 +198,14 @@ public class Poly {
 		timer = new Timer(true);
 		p.getElements().clear();
 
+		snapshot = new Matrix(points);
+
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				Platform.runLater(() -> {
 					double newX = t.getX(System.currentTimeMillis() * speed), newY = t.getY(System.currentTimeMillis() * speed);
+					scale(t.getScale(System.currentTimeMillis() * speed), snapshot);
 					move(newX, newY);
 					if (p.getElements().isEmpty())
 						p.getElements().add(new MoveTo(newX, newY));

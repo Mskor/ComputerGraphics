@@ -59,6 +59,11 @@ public class EpicycloidTrajectory implements Trajectory {
     }
 
     @Override
+    public double getScale(double t) {
+        return 2 * Math.cos(t) + 0.1;
+    }
+
+    @Override
     public Trajectory buildAndValidate(ValidatorChain<String> argsValidator, List<String> args) {
 
         List<Double> parsedArgs = new ArrayList<>();

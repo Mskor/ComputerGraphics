@@ -18,7 +18,7 @@ public class Matrix {
 	}
 
 	public Matrix(Matrix proto) {
-		this._values = proto._values;
+		this._values = proto._values.clone();
 		this._m = proto._m;
 		this._n = proto._n;
 	}
@@ -54,17 +54,17 @@ public class Matrix {
 			_values[i][1] = ypoint[i];
 		}
 	}
-	
-	public int[] getXPoints(double baseX){
-		int[] xp = new int[_m];
+
+	public double[] getXPoints(double baseX) {
+		double[] xp = new double[_m];
 		for(int i = 0; i < _m; i++){
 			xp[i] = (int)(_values[i][0] + baseX);
 		}
 		return xp;
 	}
-	
-	public int[] getYPoints(double baseY){
-		int[] yp = new int[_m];
+
+	public double[] getYPoints(double baseY) {
+		double[] yp = new double[_m];
 		for(int i = 0; i < _m; i++){
 			yp[i] = (int)(_values[i][1] + baseY);
 		}

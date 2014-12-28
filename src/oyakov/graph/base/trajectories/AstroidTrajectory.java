@@ -34,6 +34,11 @@ public class AstroidTrajectory implements Trajectory {
         return R * Math.pow(Math.sin(t), 3) + yBase;
     }
 
+    @Override
+    public double getScale(double t) {
+        return Math.cos(t) + 0.0001;
+    }
+
     public void setR(double r) {
         R = r;
     }

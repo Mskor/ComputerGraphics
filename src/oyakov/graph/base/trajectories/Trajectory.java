@@ -14,5 +14,7 @@ public interface Trajectory {
 
     double getY(double t);
 
+    double getScale(double t);
+
     Trajectory buildAndValidate(ValidatorChain<String> argsValidator, List<String> args);
 }
